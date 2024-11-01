@@ -46,11 +46,3 @@ jobs:
           bucket: v8cloud
           assets: |
             installer/**:/cursor-history/
-            
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            installer/CursorHistory_Setup_*.exe
-        env:
-          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }} 
