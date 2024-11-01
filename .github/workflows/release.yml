@@ -33,11 +33,25 @@ jobs:
           .\bin\ISCC.exe /DAppVersion=${{ env.VERSION }} /O"build" "installer.iss"
 
       - name: Upload to Aliyun OSS
-        uses: tvrcgo/upload-to-oss@v1.0
+        env:
+          ALIYUN_ACCESS_KEY_ID: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
+          ALIYUN_ACCESS_KEY_SECRET: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
+          OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
+          OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT }}
+        run: |
+          # 获取版本号（从 tag 中提取）
+          $VERSION = $env:GITHUB_REF -replace 'refs/tags/v', ''
+          
+          # 上传安装包到 OSS
+          .\aliyun.exe oss cp "installer\CursorHistory_Setup_$VERSION.exe" "oss://$env:OSS_BUCKET/CursorHistory/releases/CursorHistory_Setup_$VERSION.exe" `
+            --access-key-id "$env:ALIYUN_ACCESS_KEY_ID" `
+            --access-key-secret "$env:ALIYUN_ACCESS_KEY_SECRET" `
+            --endpoint "$env:OSS_ENDPOINT"
+            
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
         with:
-          key-id: ${{ secrets.OSS_ACCESS_KEY_ID }}
-          key-secret: ${{ secrets.OSS_ACCESS_KEY_SECRET }}
-          region: oss-cn-hangzhou
-          bucket: your-bucket-name
-          asset-path: ./build/vscodehelper-setup.exe
-          target-path: /releases/vscodehelper-setup-${{ env.VERSION }}.exe 
+          files: |
+            installer/CursorHistory_Setup_*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
