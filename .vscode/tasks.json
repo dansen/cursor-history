@@ -1,0 +1,20 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build-dev",
+            "type": "shell",
+            "command": "go build -ldflags=\"-H windowsgui\" -o cursor_history.exe && copy logo.ico cursor_history.ico",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "build-prod",
+            "type": "shell",
+            "command": "go build -ldflags=\"-H windowsgui -s -w\" -o cursor_history.exe && copy logo.ico cursor_history.ico",
+            "group": "build"
+        }
+    ]
+}

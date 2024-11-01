@@ -1,0 +1,70 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'vt*'
+
+env:
+  GO_VERSION: '1.22'
+  INNO_SETUP_VERSION: '6.2.2'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: ${{ env.GO_VERSION }}
+        
+    - name: Install dependencies
+      run: |
+        go mod download
+        
+    - name: Download and Install Inno Setup
+      run: |
+        Invoke-WebRequest "https://files.jrsoftware.org/is/6/innosetup-${{ env.INNO_SETUP_VERSION }}.exe" -OutFile "innosetup.exe"
+        Start-Process -FilePath "innosetup.exe" -ArgumentList "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-" -Wait
+        
+    - name: Build Application
+      run: |
+        go generate ./...
+        go build -v -ldflags="-H windowsgui -s -w" -o CursorHistory.exe
+        
+    - name: Build Installer
+      run: |
+        & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' setup.iss
+        
+    - name: Configure Aliyun OSS
+      run: |
+        # 安装 aliyun-cli
+        Invoke-WebRequest "https://aliyuncli.alicdn.com/aliyun-cli-windows-latest-amd64.zip" -OutFile "aliyun-cli.zip"
+        Expand-Archive -Path "aliyun-cli.zip" -DestinationPath "."
+        
+    - name: Upload to Aliyun OSS
+      env:
+        ALIYUN_ACCESS_KEY_ID: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
+        ALIYUN_ACCESS_KEY_SECRET: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
+        OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
+        OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT }}
+      run: |
+        # 获取版本号（从 tag 中提取）
+        $VERSION = $env:GITHUB_REF -replace 'refs/tags/v', ''
+        
+        # 上传安装包到 OSS
+        .\aliyun.exe oss cp "installer\CursorHistory_Setup_$VERSION.exe" "oss://$env:OSS_BUCKET/CursorHistory/releases/CursorHistory_Setup_$VERSION.exe" `
+          --access-key-id "$env:ALIYUN_ACCESS_KEY_ID" `
+          --access-key-secret "$env:ALIYUN_ACCESS_KEY_SECRET" `
+          --endpoint "$env:OSS_ENDPOINT"
+          
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          installer/CursorHistory_Setup_*.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
