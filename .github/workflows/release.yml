@@ -30,8 +30,7 @@ jobs:
 
       - name: Create Installer
         run: |
-          Invoke-WebRequest "https://files.jrsoftware.org/is/6/innosetup-${{ env.INNO_SETUP_VERSION }}.exe" -OutFile "innosetup.exe"
-          Start-Process -FilePath "innosetup-6.2.2.exe" -ArgumentList "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-" -Wait
+          Start-Process -FilePath "./bin/innosetup-6.2.2.exe" -ArgumentList "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-" -Wait
 
       - name: Build Installer
         run: |
