@@ -243,7 +243,6 @@ func processFile(file FileInfo, configManager *storage.ConfigManager, logger typ
 	workspaceJsonPath := filepath.Join(filepath.Dir(file.Path), "workspace.json")
 	workspace, err := processWorkspaceJson(workspaceJsonPath)
 	if err != nil {
-		logger.Log(types.LogLevelError, "处理 workspace.json 出错: %v", err)
 		return
 	}
 
