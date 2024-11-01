@@ -36,21 +36,16 @@ jobs:
         run: |
           & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' setup.iss
 
-      - name: Upload to Aliyun OSS
-        env:
-          ALIYUN_ACCESS_KEY_ID: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
-          ALIYUN_ACCESS_KEY_SECRET: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
-          OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
-          OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT }}
-        run: |
-          # 获取版本号（从 tag 中提取）
-          $VERSION = $env:GITHUB_REF -replace 'refs/tags/v', ''
-          
-          # 上传安装包到 OSS
-          .\aliyun.exe oss cp "installer\CursorHistory_Setup_$VERSION.exe" "oss://$env:OSS_BUCKET/CursorHistory/releases/CursorHistory_Setup_$VERSION.exe" `
-            --access-key-id "$env:ALIYUN_ACCESS_KEY_ID" `
-            --access-key-secret "$env:ALIYUN_ACCESS_KEY_SECRET" `
-            --endpoint "$env:OSS_ENDPOINT"
+      - name: Upload to oss
+        id: upload_to_oss
+        uses: tvrcgo/oss-action@master
+        with:
+          key-id: ${{ secrets.ALIYUN_ACCESS_KEY_ID  }}
+          key-secret: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET  }}
+          region: oss-cn-hangzhou
+          bucket: v8cloud
+          assets: |
+            installer/**:/cursor-history/
             
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
