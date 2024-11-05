@@ -56,23 +56,16 @@ func findAndActivateExistingWindow() bool {
 }
 
 func main() {
-	// 创建命名互斥锁
-	mutex, err := createMutex("Global\\CursorHistory")
+	// 获取可执行文件路径
+	exePath, err := os.Executable()
 	if err != nil {
-		log.Fatal("创建互斥锁失败:", err)
+		log.Fatal("获取可执行文件路径失败:", err)
 	}
-	defer syscall.CloseHandle(mutex)
+	exeDir := filepath.Dir(exePath)
 
-	// 检查是否已经有实例在运行
-	if syscall.GetLastError() == syscall.ERROR_ALREADY_EXISTS {
-		// 尝试查找并激活已存在的窗口
-		log.Println("程序已经在运行")
-		return
-	}
-
-	if findAndActivateExistingWindow() {
-		log.Println("程序已经在运行，已激活现有窗口")
-		return
+	// 切换工作目录到可执行文件所在目录
+	if err := os.Chdir(exeDir); err != nil {
+		log.Fatal("切换工作目录失败:", err)
 	}
 
 	// 设置日志输出
@@ -83,8 +76,28 @@ func main() {
 	defer logFile.Close()
 	log.SetOutput(logFile)
 
-	// 记录启动信息
-	log.Println("应用程序启动")
+	// 记录启动信息和路径
+	log.Printf("应用程序启动")
+	log.Printf("可执行文件路径: %s", exePath)
+	log.Printf("工作目录: %s", exeDir)
+
+	// 创建命名互斥锁
+	mutex, err := createMutex("Global\\CursorHistory")
+	if err != nil {
+		log.Fatal("创建互斥锁失败:", err)
+	}
+	defer syscall.CloseHandle(mutex)
+
+	// 检查是否已经有实例在运行
+	if syscall.GetLastError() == syscall.ERROR_ALREADY_EXISTS {
+		log.Println("程序已经在运行")
+		return
+	}
+
+	if findAndActivateExistingWindow() {
+		log.Println("程序已经在运行，已激活现有窗口")
+		return
+	}
 
 	// 初始化应用配置
 	app.InitApp("prod") // 默认使用 prod，但如果有环境变量则使用环境变量的值
