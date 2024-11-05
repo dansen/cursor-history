@@ -26,7 +26,7 @@ jobs:
       - name: Build
         run: |
           mkdir build
-          go build -v -ldflags="-s -w -H windowsgui -X cursor_history/internal/app.Version=${{ env.VERSION }}" -trimpath -o build/vscodehelper.exe
+          go build -v -ldflags="-s -w -H windowsgui -X cursor_history/internal/app.Version=${{ env.VERSION }}" -trimpath -o build/CursorHistory.exe
 
       - name: Create Installer
         run: |
