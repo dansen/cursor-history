@@ -1,5 +1,5 @@
 ﻿#ifndef AppVersion
-  #define AppVersion "1.0.9"
+  #define AppVersion "1.0.12"
 #endif
 
 #define MyAppName "Cursor History"
