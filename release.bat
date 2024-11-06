@@ -19,7 +19,7 @@ powershell -Command "(Get-Content build.bat) -replace 'set VERSION=.*', 'set VER
 
 :: Update version in setup.iss
 echo Updating setup.iss...
-powershell -Command "(Get-Content setup.iss) -replace '#define MyAppVersion \".*\"', '#define MyAppVersion \"%VERSION%\"' | Set-Content setup.iss -Encoding UTF8"
+powershell -Command "(Get-Content setup.iss) -replace '#define AppVersion \".*\"', '#define AppVersion \"%VERSION%\"' | Set-Content setup.iss -Encoding UTF8"
 
 :: Git operations
 echo Committing changes...
