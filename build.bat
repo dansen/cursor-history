@@ -1,8 +1,8 @@
-@echo off
+﻿@echo off
 echo Building optimized version...
 
 :: Set version
-set VERSION=1.0.9
+set VERSION=v1.0.10
 
 :: Set environment variables
 set GOOS=windows
