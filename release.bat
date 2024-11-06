@@ -17,9 +17,13 @@ powershell -Command "(Get-Content internal/app/version.go) -replace 'Version = \
 echo Updating build.bat...
 powershell -Command "(Get-Content build.bat) -replace 'set VERSION=.*', 'set VERSION=%VERSION%' | Set-Content build.bat -Encoding UTF8"
 
+:: Update version in setup.iss
+echo Updating setup.iss...
+powershell -Command "(Get-Content setup.iss) -replace '#define MyAppVersion \".*\"', '#define MyAppVersion \"%VERSION%\"' | Set-Content setup.iss -Encoding UTF8"
+
 :: Git operations
 echo Committing changes...
-git add internal/app/version.go build.bat
+git add internal/app/version.go build.bat setup.iss
 git commit -m "release: v%VERSION%"
 
 :: Create and push tag
