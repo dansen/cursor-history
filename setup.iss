@@ -1,4 +1,4 @@
-#ifndef AppVersion
+﻿#ifndef AppVersion
   #define AppVersion "1.0.9"
 #endif
 
@@ -8,7 +8,7 @@
 #define MyAppExeName "CursorHistory.exe"
 
 [Setup]
-; 基本信息
+; 鍩烘湰淇℃伅
 AppId={{B8D80C89-F1D4-4F1D-9047-B0EAA2A5FF2F}
 AppName={#MyAppName}
 AppVersion={#AppVersion}
@@ -38,9 +38,9 @@ Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "{
 Name: "startupicon"; Description: "{cm:AutoStartup}"; GroupDescription: "{cm:OtherOptions}"
 
 [Files]
-; 主程序
+; 涓荤▼搴?
 Source: "CursorHistory.exe"; DestDir: "{app}"; Flags: ignoreversion
-; 其他必要文件
+; 鍏朵粬蹇呰鏂囦欢
 Source: "logo.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "assets\*"; DestDir: "{app}\assets"; Flags: ignoreversion recursesubdirs createallsubdirs
 
@@ -50,7 +50,7 @@ Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Registry]
-; 添加开机启动项
+; 娣诲姞寮€鏈哄惎鍔ㄩ」
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "CursorHistory"; ValueData: """{app}\{#MyAppExeName}"" -autostart"; Flags: uninsdeletevalue; Tasks: startupicon
 
 [Run]
